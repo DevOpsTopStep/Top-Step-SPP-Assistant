@@ -58,12 +58,24 @@ export const config = {
 export const srConfig = JSON.parse(
   fs.readFileSync(path.join(root, 'config', 'script-request.json'), 'utf8'));
 
+// The XML API (needed for script requests, invoices, charges, etc.) turns on
+// automatically once both the namespace and key are set. Without them the
+// assistant runs REST-only: script writing/review and REST reports still work.
+// The OAuth scope keeps requesting xml so users won't need to reconnect later.
+export function xmlEnabled() {
+  return Boolean(config.spp.apiNamespace && config.spp.apiKey)
+    && config.spp.scope.toLowerCase().includes('xml')
+    && env('SPP_DISABLE_XML', 'false') !== 'true';
+}
+
+export function features() {
+  return { xml: xmlEnabled(), scriptRequests: xmlEnabled() };
+}
+
 export function assertConfigured() {
   const missing = [];
   if (!config.anthropic.apiKey) missing.push('ANTHROPIC_API_KEY');
   if (!config.spp.clientId) missing.push('SPP_CLIENT_ID');
   if (!config.spp.clientSecret) missing.push('SPP_CLIENT_SECRET');
-  if (config.spp.scope.includes('xml') && (!config.spp.apiNamespace || !config.spp.apiKey))
-    missing.push('SPP_API_NAMESPACE / SPP_API_KEY (needed for the XML API)');
   return missing;
 }

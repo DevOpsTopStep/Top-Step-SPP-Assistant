@@ -35,6 +35,18 @@ The server is needed because the Claude API key and the SPP OAuth client secret 
    - Token lifetimes are set on the application form; SPP's docs cite 15-minute access tokens and 24-hour refresh tokens. The server refreshes access tokens automatically, but once a refresh token expires the user clicks **Connect SPP** again.
 4. **Check the SR field names** in `server/config/script-request.json`. Category, stage, source and severity IDs came from your live SPP data. The custom field names (`script_name__c`, `estimated_hours__c`, `requested_date__c`, `create_task_for_script_request__c`, …) follow SPP's `__c` convention but **need confirming** in Administration > Global Settings > Custom Fields. Edit the JSON if any differ; no code change is needed.
 
+### Starting without the XML API key (REST-only mode)
+
+You can pilot before you have the namespace and key: leave `SPP_API_NAMESPACE` and `SPP_API_KEY` empty. The server then runs **REST-only**:
+
+| Works now | Turns on when the XML key is added |
+|---|---|
+| Writing and reviewing SPP scripts (ES5-checked) | Saving new SRs to SPP, updating SRs |
+| Reports on projects, users, customers, bookings, time entries, tasks, expense reports | Listing/finding SRs, invoices, charges, timesheets, billing & rev-rec rules |
+| Drafting SRs as copy-ready text to paste into SPP | Showing the signed-in user's name in the panel |
+
+Add both values to `.env` and restart: everything turns on automatically. Users don't need to reconnect, because the OAuth scope already includes `xml`. `GET /health` shows which mode is active (`features.xml`).
+
 ## 2. Run the server
 
 Requires Node 20+ and has **no npm dependencies**.
@@ -42,7 +54,7 @@ Requires Node 20+ and has **no npm dependencies**.
 ```bash
 cd server
 cp .env.example .env      # fill in Claude + SPP values
-npm test                  # 10 tests, all mocked, no network needed
+npm test                  # 13 tests, all mocked, no network needed
 npm start                 # http://localhost:8787
 ```
 
@@ -57,7 +69,7 @@ Put it behind HTTPS (your load balancer, an internal reverse proxy, Azure App Se
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | Claude API key and model (default `claude-sonnet-5-5`) |
 | `SPP_COMPANY_ID`, `SPP_SANDBOX` | Your SPP account. Point a pilot at the **sandbox** first |
 | `SPP_CLIENT_ID`, `SPP_CLIENT_SECRET` | From the OAuth application |
-| `SPP_API_NAMESPACE`, `SPP_API_KEY` | XML API credentials |
+| `SPP_API_NAMESPACE`, `SPP_API_KEY` | XML API credentials. Optional: leave empty for REST-only mode |
 
 ## 3. Install the extension
 

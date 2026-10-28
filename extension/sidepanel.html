@@ -32,11 +32,12 @@
     <div id="welcome" class="welcome">
       <h1>What do you need in SPP?</h1>
       <p>I can see the page you're on. Try one of these:</p>
+      <p id="limitedNote" class="limited" hidden>Script requests are draft-only for now: I'll write them for you to paste into SPP. Saving SRs directly turns on once your admin adds the SPP XML API key.</p>
       <div class="chips">
         <button class="chip" data-prompt="Help me write a new script request for this project. Ask me what you need.">New script request</button>
         <button class="chip" data-prompt="Write an SPP user script that ">Write a script</button>
         <button class="chip" data-prompt="Review the script on this page for ES5 compatibility, governance and error handling, and suggest fixes.">Review this script</button>
-        <button class="chip" data-prompt="Show my open script requests by stage.">My open SRs</button>
+        <button class="chip" data-requires="xml" data-prompt="Show my open script requests by stage.">My open SRs</button>
         <button class="chip" data-prompt="Report: hours logged per user on this project in the last 30 days, billable vs non-billable.">Hours report</button>
         <button class="chip" data-prompt="Explain what I'm looking at on this page and anything that looks off.">Explain this page</button>
       </div>

@@ -29,9 +29,16 @@
     statusEl.textContent = text; statusEl.className = 'status ' + (kind || ''); statusEl.title = title || '';
   }
 
+  function applyFeatures(f) {
+    const xml = !f || f.xml !== false;
+    document.querySelectorAll('[data-requires="xml"]').forEach(el => { el.hidden = !xml; });
+    $('limitedNote').hidden = xml;
+  }
+
   async function refreshStatus() {
     try {
       const st = await api('/api/status', { method: 'GET' });
+      applyFeatures(st.features);
       if (st.connected) {
         setStatus(st.user && st.user.name ? st.user.name : 'Connected', 'ok', st.account || '');
         $('connect').hidden = true;

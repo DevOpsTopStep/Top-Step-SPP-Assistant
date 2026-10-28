@@ -1,7 +1,8 @@
 // Agent loop over the Claude Messages API using plain fetch (no SDK needed).
 import { config } from './config.js';
 import { systemPrompt } from './prompts.js';
-import { toolDefinitions, runTool } from './tools.js';
+import { activeToolDefinitions, runTool } from './tools.js';
+import { features } from './config.js';
 import { sessionStatus } from './auth.js';
 
 export async function callClaude(body, fetchImpl = fetch) {
@@ -25,7 +26,7 @@ export async function runAgent({ sid, messages, page, deps = {} }) {
   const call = deps.callClaude || callClaude;
   const exec = deps.runTool || runTool;
   const user = sessionStatus(sid).user;
-  const system = systemPrompt({ user, page, today: new Date().toISOString().slice(0, 10) });
+  const system = systemPrompt({ user, page, today: new Date().toISOString().slice(0, 10), features: features() });
   const history = [...messages];
   const proposals = [];
   const steps = [];
@@ -35,7 +36,7 @@ export async function runAgent({ sid, messages, page, deps = {} }) {
       model: config.anthropic.model,
       max_tokens: config.anthropic.maxTokens,
       system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
-      tools: toolDefinitions,
+      tools: activeToolDefinitions(),
       messages: history,
     });
     history.push({ role: 'assistant', content: resp.content });

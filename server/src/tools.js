@@ -2,7 +2,7 @@
 // write directly: they validate and return a proposal that the user must
 // confirm in the side panel (POST /api/actions/:id/confirm).
 import crypto from 'node:crypto';
-import { config, srConfig } from './config.js';
+import { config, srConfig, xmlEnabled } from './config.js';
 import { restGet, xmlRead, xmlAdd, xmlModify, whoami, REST_RESOURCES } from './spp.js';
 import { checkEs5 } from './es5check.js';
 import { setSessionUser } from './auth.js';
@@ -105,6 +105,13 @@ export const toolDefinitions = [
   },
 ];
 
+// Tools that need the SPP XML API (namespace + key).
+export const XML_TOOLS = new Set(['spp_whoami', 'spp_xml_read', 'list_script_requests', 'propose_script_request', 'propose_script_request_update']);
+
+export function activeToolDefinitions() {
+  return xmlEnabled() ? toolDefinitions : toolDefinitions.filter(t => !XML_TOOLS.has(t.name));
+}
+
 // ---- pending write actions ------------------------------------------------
 const pending = new Map(); // id -> { sid, kind, summary, run, created }
 function propose(sid, kind, summary, details, run) {
@@ -155,6 +162,8 @@ function truncateRows(rows) {
 
 // ---- handlers --------------------------------------------------------------
 export async function runTool(sid, name, input) {
+  if (XML_TOOLS.has(name) && !xmlEnabled())
+    throw new Error('This needs the SPP XML API, which is not configured on the server yet (SPP_API_NAMESPACE / SPP_API_KEY). Script requests, invoices and charges are unavailable; REST data and script writing still work.');
   switch (name) {
     case 'spp_whoami': {
       const u = await whoami(sid);

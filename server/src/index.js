@@ -1,7 +1,7 @@
 // HTTP server for the SPP Assistant. No framework: node:http only.
 import http from 'node:http';
 import crypto from 'node:crypto';
-import { config, assertConfigured } from './config.js';
+import { config, assertConfigured, features } from './config.js';
 import { authStartUrl, handleCallback, sessionStatus, signOut, isValidSid } from './auth.js';
 import { runAgent } from './agent.js';
 import { confirmAction, cancelAction, runTool } from './tools.js';
@@ -53,7 +53,7 @@ export function createServer() {
       if (!cors(req, res)) return send(res, 403, { error: 'Origin not allowed' });
       if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
 
-      if (url.pathname === '/health') return send(res, 200, { ok: true, missingConfig: assertConfigured() });
+      if (url.pathname === '/health') return send(res, 200, { ok: true, missingConfig: assertConfigured(), features: features() });
 
       // ---- OAuth (opened in a normal browser tab) ----
       if (url.pathname === '/auth/start') {
@@ -77,8 +77,8 @@ export function createServer() {
 
         if (url.pathname === '/api/status' && req.method === 'GET') {
           const st = sessionStatus(sid);
-          if (st.connected && !st.user) { try { await runTool(sid, 'spp_whoami', {}); } catch { /* ignore */ } }
-          return send(res, 200, { ...sessionStatus(sid), account: config.spp.accountDomain, model: config.anthropic.model });
+          if (st.connected && !st.user && features().xml) { try { await runTool(sid, 'spp_whoami', {}); } catch { /* ignore */ } }
+          return send(res, 200, { ...sessionStatus(sid), account: config.spp.accountDomain, model: config.anthropic.model, features: features() });
         }
         if (url.pathname === '/api/signout' && req.method === 'POST') { signOut(sid); return send(res, 200, { ok: true }); }
 
@@ -122,6 +122,7 @@ export function createServer() {
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) {
   const missing = assertConfigured();
   if (missing.length) console.warn(`⚠ Missing config: ${missing.join(', ')} — see .env.example`);
+  if (!features().xml) console.warn('ℹ XML API not configured (SPP_API_NAMESPACE / SPP_API_KEY): running REST-only. Script requests are disabled until both are set.');
   if (!config.allowedOrigins.length) console.warn('⚠ ALLOWED_ORIGINS not set: any Chrome extension may call this server. Set it to your extension origin before rollout.');
   createServer().listen(config.port, () => console.log(`SPP Assistant server on ${config.publicUrl} (port ${config.port}) → ${config.spp.accountDomain}`));
 }
