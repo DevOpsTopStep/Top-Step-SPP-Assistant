@@ -12,12 +12,14 @@ const pendingStates = new Map(); // state -> { sid, created }
 const refreshing = new Map(); // sid -> Promise (refresh tokens are single-use)
 
 function load() {
+  if (config.tokenStoreFile === 'memory') return;
   try {
     const raw = JSON.parse(fs.readFileSync(config.tokenStoreFile, 'utf8'));
     for (const [k, v] of Object.entries(raw)) sessions.set(k, v);
   } catch { /* first run */ }
 }
 function save() {
+  if (config.tokenStoreFile === 'memory') return;
   fs.mkdirSync(path.dirname(config.tokenStoreFile), { recursive: true });
   fs.writeFileSync(config.tokenStoreFile, JSON.stringify(Object.fromEntries(sessions)), { mode: 0o600 });
 }

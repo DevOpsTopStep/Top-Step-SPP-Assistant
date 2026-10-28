@@ -20,7 +20,11 @@ function loadDotEnv(file) {
 }
 loadDotEnv(path.join(root, '.env'));
 
-const env = (k, d) => (process.env[k] === undefined || process.env[k] === '' ? d : process.env[k]);
+// Empty values and the deploy placeholder REPLACE_ME count as unset.
+const env = (k, d) => {
+  const v = process.env[k];
+  return v === undefined || v.trim() === '' || v.trim() === 'REPLACE_ME' ? d : v.trim();
+};
 
 const companyId = env('SPP_COMPANY_ID', 'company-id');
 const sandbox = env('SPP_SANDBOX', 'false') === 'true';
@@ -51,6 +55,7 @@ export const config = {
     apiNamespace: env('SPP_API_NAMESPACE', ''),
     apiKey: env('SPP_API_KEY', ''),
   },
+  // 'memory' keeps SPP sign-ins in memory only (nothing on disk; a restart asks users to reconnect).
   tokenStoreFile: env('TOKEN_STORE_FILE', path.join(root, 'data', 'sessions.json')),
   maxAgentTurns: Number(env('MAX_AGENT_TURNS', 12)),
 };
