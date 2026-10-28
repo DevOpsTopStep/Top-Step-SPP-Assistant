@@ -71,9 +71,27 @@ Put it behind HTTPS (your load balancer, an internal reverse proxy, Azure App Se
 | `SPP_CLIENT_ID`, `SPP_CLIENT_SECRET` | From the OAuth application |
 | `SPP_API_NAMESPACE`, `SPP_API_KEY` | XML API credentials. Optional: leave empty for REST-only mode |
 
+### Topstep's AWS deployment (us-east-1, account `topstepllc`)
+
+| Piece | Name |
+|---|---|
+| Server URL | `https://sp-ebcdf1d3a33d46bbbdb599fdc9fea0dd.ecs.us-east-1.on.aws` |
+| SPP OAuth redirect URI | `https://sp-ebcdf1d3a33d46bbbdb599fdc9fea0dd.ecs.us-east-1.on.aws/auth/callback` |
+| ECS Express service | `spp-assistant` (cluster `default`), 1 task, 0.25 vCPU / 512 MB |
+| Container image | ECR `spp-assistant` (tagged by commit) |
+| Build | CodeBuild `spp-assistant-build` (pulls `main` from GitHub, runs tests, pushes image) |
+| Secrets | Secrets Manager `spp-assistant/config` (JSON: `ANTHROPIC_API_KEY`, `SPP_CLIENT_ID`, `SPP_CLIENT_SECRET`, `SPP_API_NAMESPACE`, `SPP_API_KEY`) |
+| Logs | CloudWatch `/ecs/spp-assistant` (90-day retention) |
+| IAM roles | `spp-assistant-task-execution`, `spp-assistant-ecs-infrastructure`, `spp-assistant-codebuild` |
+
+Sign-ins are kept in memory only (`TOKEN_STORE_FILE=memory`), so nothing sensitive is written to disk and a redeploy asks users to click **Connect SPP** again.
+
+**Changing secrets:** edit `spp-assistant/config` in Secrets Manager, then force a new deployment of the ECS service (secrets are read when the container starts).
+**Deploying new code:** push to `main`, start the `spp-assistant-build` CodeBuild project, then update the ECS service to the new image tag.
+
 ## 3. Install the extension
 
-**Pilot (a few people):** `chrome://extensions` → Developer mode → *Load unpacked* → pick the `extension/` folder. Open the extension's **Settings**, enter the server URL, then click **Connect SPP** in the panel.
+**Pilot (a few people):** `chrome://extensions` → Developer mode → *Load unpacked* → pick the `extension/` folder. The `key` in `manifest.json` pins the extension ID to `hdkeejeiifcgbimnjfjpbilpmmiiggmc` on every machine, which is what the server's `ALLOWED_ORIGINS` allows (remove `key` before publishing to the Chrome Web Store, which assigns its own ID). Open the extension's **Settings**, enter the server URL, then click **Connect SPP** in the panel.
 
 **Company rollout:** publish it as an unlisted/private Chrome Web Store item (or self-host the .crx) and force-install it through Google Admin or Intune. Push the server URL as managed policy so nobody has to configure anything:
 
