@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "backendUrl": {
+      "title": "Assistant server URL",
+      "description": "HTTPS URL of the Topstep SPP Assistant server, e.g. https://spp-assistant.topstepllc.com",
+      "type": "string"
+    }
+  }
+}

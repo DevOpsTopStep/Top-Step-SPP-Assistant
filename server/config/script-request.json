@@ -1,0 +1,52 @@
+{
+  "_comment": "Script Request (SR) setup for Topstep's SPP account. IDs come from your live SPP data (Oct 2026). XML field names follow the SPP XML API 'Issue' datatype; custom fields end in __c. Verify names against Administration > Global Settings > Custom Fields and the SPP Data Dictionary before go-live.",
+  "xmlType": "Issue",
+  "categoryId": 13,
+  "defaultStageId": 1,
+  "uiRecordUrl": "/issue.pl?action=view&id={id}",
+  "stages": {
+    "1": "Scoping", "2": "Development", "3": "Waiting for Approval", "7": "Code Review",
+    "8": "Dev Testing", "9": "Client UAT", "12": "UAT Complete", "13": "Live",
+    "14": "Cancelled", "15": "On Hold", "16": "Change", "18": "Break/Fix"
+  },
+  "sources": { "1": "Scheduled", "2": "Library", "3": "Form", "4": "Boomi", "5": "Client", "6": "Internal" },
+  "severities": {
+    "4": "1", "5": "2", "6": "3", "7": "4", "8": "5", "9": "6", "10": "7", "11": "8", "12": "9",
+    "13": "Not prioritized", "14": "High", "15": "Medium", "16": "Low"
+  },
+  "fields": {
+    "id": "id",
+    "name": "name",
+    "number": "number",
+    "prefix": "prefix",
+    "description": "description",
+    "notes": "issue_notes",
+    "priority": "priority",
+    "project_id": "projectid",
+    "customer_id": "customerid",
+    "project_task_id": "project_taskid",
+    "category_id": "issue_categoryid",
+    "stage_id": "issue_stageid",
+    "severity_id": "issue_severityid",
+    "source_id": "issue_sourceid",
+    "owner_id": "owner_id",
+    "user_id": "userid",
+    "created": "created",
+    "updated": "updated"
+  },
+  "customFields": {
+    "script_name": "script_name__c",
+    "estimated_hours": "estimated_hours__c",
+    "requested_date": "requested_date__c",
+    "estimated_date": "estimated_date__c",
+    "script_owner_id": "script_owner_id__c",
+    "code_reviewer_id": "code_reviewer_id__c",
+    "tester_id": "tester_id__c",
+    "create_task_for_script_request": "create_task_for_script_request__c",
+    "confluence_link": "confluence_link__c"
+  },
+  "defaults": {
+    "priority": 50,
+    "create_task_for_script_request": 1
+  }
+}

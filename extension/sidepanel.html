@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPP Assistant</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <img src="icons/icon32.png" alt="" width="20" height="20">
+      <span>SPP Assistant</span>
+    </div>
+    <div class="bar-actions">
+      <span id="status" class="status" title="">Checking…</span>
+      <button id="newChat" class="icon-btn" title="New conversation" aria-label="New conversation">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <button id="settings" class="icon-btn" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section id="connect" class="connect" hidden>
+    <p id="connectMsg">Connect your SuiteProjects Pro account so the assistant can read and draft records with your permissions.</p>
+    <button id="connectBtn" class="primary">Connect SPP</button>
+  </section>
+
+  <main id="log" class="log" aria-live="polite">
+    <div id="welcome" class="welcome">
+      <h1>What do you need in SPP?</h1>
+      <p>I can see the page you're on. Try one of these:</p>
+      <div class="chips">
+        <button class="chip" data-prompt="Help me write a new script request for this project. Ask me what you need.">New script request</button>
+        <button class="chip" data-prompt="Write an SPP user script that ">Write a script</button>
+        <button class="chip" data-prompt="Review the script on this page for ES5 compatibility, governance and error handling, and suggest fixes.">Review this script</button>
+        <button class="chip" data-prompt="Show my open script requests by stage.">My open SRs</button>
+        <button class="chip" data-prompt="Report: hours logged per user on this project in the last 30 days, billable vs non-billable.">Hours report</button>
+        <button class="chip" data-prompt="Explain what I'm looking at on this page and anything that looks off.">Explain this page</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="composer">
+    <label class="ctx-toggle"><input type="checkbox" id="useContext" checked> Include this page</label>
+    <div class="input-row">
+      <textarea id="input" rows="1" placeholder="Ask about SPP…" title="Enter to send · Shift+Enter for a new line"></textarea>
+      <button id="send" class="send" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 12l16-8-6 16-2-6-8-2z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </footer>
+
+  <script src="markdown.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

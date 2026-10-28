@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Topstep SPP Assistant",
+  "short_name": "SPP Assistant",
+  "version": "0.1.0",
+  "description": "AI assistant inside SuiteProjects Pro: draft script requests, write SPP user scripts, and run reports.",
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": { "default_title": "Open SPP Assistant", "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" } },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["sidePanel", "storage", "tabs", "contextMenus"],
+  "host_permissions": [
+    "https://*.netsuitesuiteprojectspro.com/*",
+    "https://*.openair.com/*"
+  ],
+  "content_scripts": [{
+    "matches": ["https://*.netsuitesuiteprojectspro.com/*", "https://*.openair.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_idle",
+    "all_frames": false
+  }],
+  "options_page": "options.html",
+  "storage": { "managed_schema": "managed_schema.json" },
+  "commands": {
+    "_execute_action": { "suggested_key": { "default": "Ctrl+Shift+K", "mac": "Command+Shift+K" }, "description": "Open SPP Assistant" }
+  }
+}
